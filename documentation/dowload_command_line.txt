@@ -1,0 +1,39 @@
+# Download one file on Dahu/Cargo:
+wget --no-check-certificate --user="pierre.zeiger@gmail.com" --password="passwd" sftp://smos-diss.eo.esa.int:/SMOS/L1CL/MIR_SCLF1C/2023/05/10/SM_OPER_MIR_SCLF1C_20230510T003747_20230510T013100_724_001_1.zip
+
+# Download recursively directories (old command -> ftp):
+wget -m --no-check-certificate --user="pierre.zeiger@gmail.com" --ask-password ftp://smos-diss.eo.esa.int:/SMOS/L1CL/MIR_SCLF1C/2020/01
+
+# Nouvelle commande (FTPS)
+wget -m --ftps-implicit --no-check-certificate --ftp-user="pierre.zeiger@gmail.com" --ask-password ftps://smos-diss.eo.esa.int:990/SMOS/L1CL/MIR_SCLF1C/2024/04
+
+# Unzip recursively files (takes a very long time!):
+find . -iname '*.zip' -exec sh -c 'unzip -o -d "${0%.*}" "$0"' '{}' ';'
+
+# Check the number of files in a directory:
+find DIR_NAME -iname '*.zip' -type f | wc -l
+
+# Find and delete all files with ".zip" extension:
+find . -iname "*.zip" -type f -delete
+
+
+
+
+
+# Extract L1C with Octave/Matlab (--> Octave 8.1.0)
+source /applis/site/guix-start.sh
+# cd ~/.guix-profile
+cd ~/programs/L1c_reader
+octave reader.m "/bettik/PROJECTS/pr-snowem/zeigerp/SMOS_data/L1C/2020/01/01/SM*300_1"
+
+# Idem avec un script de soumission :
+oarsub -S "./script_octave_launcher.sh /bettik/PROJECTS/pr-snowem/zeigerp/SMOS_data/L1C/2020/01"
+
+# Lancer un job Octave intéractif sur une année entière en demandant 2 noeuds (64 coeurs) pour 12h :
+oarsub -I -l /nodes=2/core=32,walltime=12:0:0 --project snowem
+./script_octave_launcher.sh /bettik/PROJECTS/pr-snowem/zeigerp/SMOS_data/L1C/2018
+
+# Lancer un job python avec script de soumission (SMOSHR.py sur 1 mois) :
+oarsub -S "./script_python_launcher.sh /bettik/PROJECTS/pr-snowem/zeigerp/SMOS_data/L1C/2020/01"
+
+
