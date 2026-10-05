@@ -19,20 +19,19 @@ from melt4d.constants import WMO_MELT_VAR
 
 
 def smos_melt_loop(path_data, name = 'Antartica'):
-
     # Open AMSR melt mask (<1700 m elevation)
     if name == 'Antartica':
         amsr_mask = ~np.isnan(xr.open_dataset(path_data+'/AMSR/melt-2002-2023.nc').snow_status_wet_dry_19H_ASC_filter.mean('time')) 	#.chunk(dict(time=1000, x=100, y=100))
-        
     elif name == 'Greenland':
         amsr_mask = rioxarray.open_rasterio(path_data+'/mask/GrIS_fraction_12km_80%_clean.tif')
-        
     # All melt years
     years = glob.glob(path_data + '/SMOS_data/rSIR-enhanced/single_incidence_40/%s/20*/'%name)
     years = np.sort([int(y.split('/')[-2]) for y in years])
+    #years = [2022, 2023]
+    print(years)
     
-    for i, y in enumerate(years[:-1]):      # Loop over the melt years
-    
+    for y in np.arange(2010,2012):#i, y in enumerate(years[:-1]):      # Loop over the melt years
+        print(y)
         # 1-year time series from April 01 to March 31
         files1 = np.sort(glob.glob(path_data + '/SMOS_data/rSIR-enhanced/single_incidence_40/%s/%s/TB_rSIR_%s_*.nc'%(name, str(y), name)))
         files2 = np.sort(glob.glob(path_data + '/SMOS_data/rSIR-enhanced/single_incidence_40/%s/%s/TB_rSIR_%s_*.nc'%(name, str(y + 1), name)))
@@ -44,7 +43,6 @@ def smos_melt_loop(path_data, name = 'Antartica'):
     
         # Apply melt algorithm
         melt = {}
-        
         # Gapfilling and TBV mask computation
         tbh_morning = algo.gapfilling(ds_TB['TB_H_morning'].sel(iterations = 10), days=3)
         tbh_afternoon = algo.gapfilling(ds_TB['TB_H_afternoon'].sel(iterations = 10), days=3)
@@ -54,7 +52,6 @@ def smos_melt_loop(path_data, name = 'Antartica'):
         mask_TBV_afternoon = ds_TB['TB_V_afternoon'].sel(iterations = 10).std(dim='time') > thres_TBV
         mask_TBV_daily = ds_TB[['TB_V_afternoon', 'TB_V_morning']].sel(iterations = 10).to_array(
             dim = 'new').mean('new').std(dim='time') > thres_TBV
-        
         # Compute adaptive threshold
         stats_morning = algo.compute_stats_adaptive(tbh_morning, melt_coef=3.0, threshold0=15)
         stats_afternoon = algo.compute_stats_adaptive(tbh_afternoon, melt_coef=3.0, threshold0=15)
@@ -67,26 +64,14 @@ def smos_melt_loop(path_data, name = 'Antartica'):
         melt['mask_TBV_morning'] = mask_TBV_morning
         melt['mask_TBV_afternoon'] = mask_TBV_afternoon
         melt['mask_TBV_daily'] = mask_TBV_daily
-    	
-    	# Export dataset
+    
         output = xr.Dataset(melt)#.where(mask_TBV_morning, algo.missing_value)
         output.to_netcdf(path_data + "/SMOS_data/melt/%s/SMOS_melt_12km_%s_%s-%s.nc"%(name, name, y, y + 1))
 
 
-def compute_contamination_mask(melt):    # Years should be a sequence containing all the m
-    years = np.unique(melt.time.values.astype('datetime64[Y]').astype(int) + 1970)
-    winter_melt = 0
-    ndays = 0
-    for y in years[:-1]:
-        m = (melt > 0).sel(time = slice(f'{y}-06-15', f'{y}-08-15')).sum(['time'])
-        winter_melt = winter_melt + m   
-        ndays = ndays + len(melt.sel(time = slice(f'{y}-06-15', f'{y}-08-15')).time)  
-    return winter_melt / ndays, years
-
-
 now = time.time()
 name = os.environ["NAME"]
-thres_TBV = 5
+thres_TBV = 5#3.8 
 
 smos_melt_loop('/bettik/PROJECTS/pr-snowem/zeigerp', name = name)
 

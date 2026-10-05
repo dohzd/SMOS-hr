@@ -16,7 +16,8 @@ import numpy as np
 
 
 def edit_nc_attributes(ds_TB,x_ref,y_ref,lens_data,len_asc_init,len_desc_init,len_DGG,
-                       len_H_asc_fin,len_H_desc_fin,len_V_asc_fin,len_V_desc_fin,single_incidence):      # Write attributes to the ds_TB dataset and contained dataArrays
+                       len_H_asc_fin,len_H_desc_fin,len_V_asc_fin,len_V_desc_fin,single_incidence=True):      # Write attributes to the ds_TB dataset and contained dataArrays
+
     # X array
     ds_TB.x.attrs['long_name'] = 'X_coordinate_NSIDC_Polar_Stereographic_South'
     ds_TB.x.attrs['standard_name'] = 'X'
@@ -38,6 +39,13 @@ def edit_nc_attributes(ds_TB,x_ref,y_ref,lens_data,len_asc_init,len_desc_init,le
     ds_TB.iterations.attrs['valid_min'] = '0'
     ds_TB.iterations.attrs['valid_max'] = '9999'
     ds_TB.iterations.attrs['actual_range'] = '[0  15]'
+    # Incidence array
+    ds_TB.incidence.attrs['long_name'] = 'Mean_bin_incidence_angle'
+    ds_TB.incidence.attrs['standard_name'] = 'Incidence_angle'
+    ds_TB.incidence.attrs['units'] = 'degree'
+    ds_TB.incidence.attrs['valid_min'] = '0'
+    ds_TB.incidence.attrs['valid_max'] = '90'
+    ds_TB.incidence.attrs['actual_range'] = '[2.5, 62.5]'
     # TB H asc array
     ds_TB.TB_H_morning.attrs['long_name'] = 'Reconstructed_TB_H_polarization_morning_tracks'
     ds_TB.TB_H_morning.attrs['standard_name'] = 'TB_H_morning'
