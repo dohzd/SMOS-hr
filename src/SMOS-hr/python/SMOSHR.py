@@ -5,7 +5,6 @@ Created on Fri Apr  7 11:04:13 2023
 @author: Pierre
 """
 
-
 import numpy as np
 import xarray as xr
 import warnings
@@ -15,35 +14,27 @@ import os
 # import rioxarray
 
 
-# No warnings
-warning_off = True
-if warning_off:
-    warnings.filterwarnings("ignore", category=RuntimeWarning)
-np.set_printoptions(suppress=True)  # Put off scientific notation
+if __name__ == "__main__":
+    # No warnings
+    warning_off = True
+    if warning_off:
+        warnings.filterwarnings("ignore", category=RuntimeWarning)
+    np.set_printoptions(suppress=True)  # Put off scientific notation
 
-now = time.time()
+    now = time.time()
 
-# Correct paths and options
-platform = "local"
-if platform=="local":
-    path_data = '/home/zeigerp/Documents/Postdoc_IGE/data'
-    name = 'Antarctica'
-    grid = xr.open_dataset(path_data+'/SMOS_data/%s_grid_12km_lonlat.nc'%name)
+    #path_data = '/bettik/PROJECTS/pr-snowem/zeigerp'
+    root_dir = os.environ["ROOT_DIR"]
+    dl_dir = os.environ["DL_DIR"]
+    area = os.environ["AREA"]
+    grid_choice = os.environ["GRID"]
+    assert (area=='Greenland') | (area=='Antarctica'), "$NAME variable should be one of: 'Greenland', 'Antarctica'"
+    grid = xr.open_dataset(f"{root_dir}/mask/{area}_grid_{grid_choice}km_lonlat.nc")
     # Reconstruct
     print("Starting reconstruction")
-    ds_TB = extract_mat.read_mat_day([path_data + '/SMOS_data/mat', grid, 'West'])
-    
-elif platform=="dahu":
-    path_data = '/bettik/PROJECTS/pr-snowem/zeigerp'
-    name = os.environ["NAME"]
-    subset = os.environ["SUBSET"]
-    assert (name=='Greenland') | (name=='Antarctica'), "$NAME variable should be one of: 'Greenland', 'Antarctica'"
-    grid = xr.open_dataset(path_data+'/mask/%s_grid_12km_lonlat.nc'%name)
-    # Reconstruct
-    print("Starting reconstruction")
-    ds_TB = extract_mat.reconstruct_from_mat(path_data, grid, subset=None) 
+    ds_TB = extract_mat.reconstruct_from_mat(dl_dir, grid, subset=None)
 
-print('Finished. Total time ellapsed: %.2f hours'%((time.time()-now)/3600))
+    print('Finished. Total time ellapsed: %.2f hours'%((time.time()-now)/3600))
 
 
 

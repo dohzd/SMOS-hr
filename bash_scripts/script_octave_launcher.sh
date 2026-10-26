@@ -1,14 +1,14 @@
 #!/bin/bash
 
-#OAR -l /nodes=1/core=32,walltime=0:30:00
+#OAR -l /nodes=1/core=2,walltime=2:00:00
 #OAR --stdout tmp/script_octave.%jobid%.out
 #OAR --stderr tmp/script_octave.%jobid%.err
 #OAR --project snowem
-#####OAR -t devel
+
 
 DIR=$1
 echo "$DIR"
-DIR= "/bettik/PROJECTS/pr-snowem/zeigerp/SMOS_data/L1C/2020/01"
+DIR= "/silenus/PROJECTS/pr-snowem/huzardd/SMOS/data"
 echo "$DIR"
 source /applis/site/guix-start.sh
 cd ~/programs/L1c_reader
@@ -20,7 +20,7 @@ PARAM=($DIR/*)
 
 for PAR in ${PARAM[@]}
 do
-	cd /home/zeigerp/programs
+	cd /silenus/PROJECTS/pr-snowem/huzardd/prog/SMOS-hr-main/bash_scripts/
 	oarsub -S "./script_octave.sh $PAR"
 done
 

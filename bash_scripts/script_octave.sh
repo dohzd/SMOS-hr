@@ -1,20 +1,33 @@
 #!/bin/bash
 
-#OAR -l /core=1,walltime=0:30:0
+#OAR -l /core=4,walltime=36:00:0
 #OAR --stdout tmp/script_octave.%jobid%.out
 #OAR --stderr tmp/script_octave.%jobid%.err
 #OAR --project snowem
 #####OAR -t devel
 
-DIR=$1
-# "/bettik/PROJECTS/pr-snowem/zeigerp/SMOS_data/L1C/2020/01"
-source /applis/site/guix-start.sh
-cd /home/zeigerp/programs/L1c_reader
+ROOT_DIR=$1
+DL_DIR=$2
+#DIR="/silenus/PROJECTS/pr-snowem/huzardd/SMOS/data/L1C/2026/10/10"
+AREA=$3
 
-PARAM=($DIR/SM*_1)
+if [[ "$AREA" == "Greenland" ]]; then
+    reader="reader_Greenland.m"
+fi
 
-echo "$PARAM"
-octave reader_Antartica.m $PARAM
+if [[ "$AREA" == "Antartica" ]]; then
+    reader="reader_Antartica.m"
+fi
 
+export PATH="$HOME/.pixi/bin:$PATH"
+
+# Pixi workspace located in this directory
+cd "${ROOT_DIR}/prog"
+
+# Search below a day, month or year directory
+find "$DL_DIR" -type d -name 'SM*_1' -prune \
+    -exec pixi run -e octave octave \
+        --path SMOS-hr-main/src/SMOS-hr/octave \
+        SMOS-hr-main/src/SMOS-hr/octave/${reader} {} +
 
 

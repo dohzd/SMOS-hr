@@ -16,11 +16,8 @@ fmt='C';
 %% and then apply XY2HV() externally on this limited L1C to complement the DGGs data with HV.
 
 xy2hv=false;
-%% Read directory as input argument
-%%files = argv ()
-%%files=glob("/bettik/PROJECTS/pr-snowem/zeigerp/SMOS_data/L1C/2020/03/*/SM*300_1")
-arg_list = argv ()
-files = glob(strcat(arg_list{1},'/SM_*_1'))
+%% Read product directories passed as input arguments
+files = argv ()
 
 for i=1:numel(files)
   fL1C = files{i}

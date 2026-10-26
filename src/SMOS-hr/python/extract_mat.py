@@ -22,13 +22,8 @@ from rSIR import extract_MRFs,AVE_direct,rSIR_iter
 from edit_nc import edit_nc_attributes
 from collections.abc import Iterable
 
-# Correct paths and options
-platform = "local"
-if platform=="local":
-    name = 'Antarctica'
-    
-elif platform=="dahu":
-    name = os.environ["NAME"]
+# Greenland or Antarctica
+name = os.environ["AREA"]
     
 # Code parameters
 res = 12500                 # Grid spacing in meters 
@@ -321,12 +316,13 @@ def read_mat_day(args):
     ds_TB.to_netcdf(path + '/SMOS_TB_rSIR_%s_%s-%s-%s.nc'%(filename, date[0], date[1], date[2]))
     
     
-def reconstruct_from_mat(path_data, grid, subset=None):
-    dirs = os.environ["PARAM"]
-    dir_days = glob.glob(dirs+'/*')
+def reconstruct_from_mat(data_dir, grid, subset=None):
+    mat_files = glob.glob(os.path.join(data_dir, '**', '*.mat'), recursive=True)
+    dir_days = sorted({os.path.dirname(f) for f in mat_files})
     print(dir_days)
-    p = Pool(len(dir_days))      
-    p.map(read_mat_day,[[d,grid,subset] for d in dir_days])
+
+    with Pool(processes=min(16, len(dir_days))) as p:
+        p.map(read_mat_day, [[d, grid, subset] for d in dir_days])
 
 
 def flag_out(flags):
