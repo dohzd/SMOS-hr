@@ -33,7 +33,7 @@ grid="12"
 
 url="ftps://smos-diss.eo.esa.int:990/SMOS/L1CL/MIR_SCLF1C/${date_path}/"
 
-root_dir="/silenus/PROJECTS/pr-snowem/huzardd/SMOS/"
+root_dir="/dir/project"
 data_dir="${root_dir}data/L1C/"
 download_dir="${data_dir}${date_path}"
 

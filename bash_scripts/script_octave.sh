@@ -8,7 +8,6 @@
 
 ROOT_DIR=$1
 DL_DIR=$2
-#DIR="/silenus/PROJECTS/pr-snowem/huzardd/SMOS/data/L1C/2026/10/10"
 AREA=$3
 
 if [[ "$AREA" == "Greenland" ]]; then

@@ -23,7 +23,6 @@ if __name__ == "__main__":
 
     now = time.time()
 
-    #path_data = '/bettik/PROJECTS/pr-snowem/zeigerp'
     root_dir = os.environ["ROOT_DIR"]
     dl_dir = os.environ["DL_DIR"]
     area = os.environ["AREA"]

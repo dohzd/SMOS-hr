@@ -5,7 +5,7 @@
 #OAR --stderr tmp/script_python.%jobid%.err
 #OAR --project snowem
 
-ROOT_DIR=$1 #"/bettik/PROJECTS/pr-snowem/zeigerp/SMOS_data/L1C/2020/01" 
+ROOT_DIR=$1
 DL_DIR=$2
 AREA=$3
 GRID=$4
